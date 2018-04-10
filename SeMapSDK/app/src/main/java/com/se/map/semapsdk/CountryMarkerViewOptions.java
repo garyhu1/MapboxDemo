@@ -9,12 +9,13 @@ import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class CountryMarkerViewOptions extends BaseMarkerViewOptions<CountryMarkerView, CountryMarkerViewOptions> {
     private boolean isSkew;
-    private Bitmap[] resIds;
+    private ArrayList<String> resIds;
     private int locationMarker;
 
     public CountryMarkerViewOptions() {
@@ -38,8 +39,7 @@ public class CountryMarkerViewOptions extends BaseMarkerViewOptions<CountryMarke
             icon(icon);
         }
         skew(in.readInt() != 0);
-        Bitmap[] res = (Bitmap[]) in.readParcelableArray(Bitmap[].class.getClassLoader());
-        resIds(res);
+        resIds(in.createStringArrayList());
         locationMarker(in.readInt());
     }
 
@@ -73,7 +73,7 @@ public class CountryMarkerViewOptions extends BaseMarkerViewOptions<CountryMarke
             out.writeParcelable(getIcon().getBitmap(), flags);
         }
         out.writeByte((byte)(isSkew ? 1 : 0));
-        out.writeParcelableArray(resIds,flags);
+        out.writeStringList(resIds);
         out.writeInt(locationMarker);
     }
 
@@ -93,7 +93,7 @@ public class CountryMarkerViewOptions extends BaseMarkerViewOptions<CountryMarke
     }
 
 
-    public CountryMarkerViewOptions resIds(Bitmap[] resIds) {
+    public CountryMarkerViewOptions resIds(ArrayList<String> resIds) {
         this.resIds = resIds;
         return getThis();
     }

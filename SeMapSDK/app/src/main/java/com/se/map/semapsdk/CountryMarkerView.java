@@ -14,10 +14,10 @@ import java.util.List;
 public class CountryMarkerView extends MarkerView {
 
     private boolean isSkew;
-    private Bitmap[] resIds;
+    private List<String> resIds;
     private int locationMarker;
 
-    public CountryMarkerView(BaseMarkerViewOptions baseMarkerViewOptions, boolean isSkew, Bitmap[] resIds,int locationMarker) {
+    public CountryMarkerView(BaseMarkerViewOptions baseMarkerViewOptions, boolean isSkew, List<String> resIds,int locationMarker) {
         super(baseMarkerViewOptions);
         this.isSkew = isSkew;
         this.resIds = resIds;
@@ -28,7 +28,7 @@ public class CountryMarkerView extends MarkerView {
         return isSkew;
     }
 
-    public Bitmap[] getFlagRes() {
+    public List<String> getFlagRes() {
         return resIds;
     }
 

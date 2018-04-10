@@ -18,8 +18,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
@@ -47,12 +49,8 @@ public class MarkerActivity extends AppCompatActivity {
 
     private MapView mapView;
     private MapboxMap mapboxMap;
+    private ArrayList<String> urls;
 
-    private String[] urls = {
-            "http://img4.imgtn.bdimg.com/it/u=307051832,2958828818&fm=27&gp=0.jpg",
-            "http://pic1.nipic.com/2008-08-14/200881415416310_2.jpg",
-            "http://img1.tplm123.com/2010/04/03/37478/14834771252048.png"
-    };
 
     private final static int LOAD_IMG = 0x001;
     private Handler handler = new Handler(){
@@ -70,6 +68,11 @@ public class MarkerActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marker);
+
+        urls = new ArrayList();
+        urls.add("http://img4.imgtn.bdimg.com/it/u=307051832,2958828818&fm=27&gp=0.jpg");
+        urls.add("http://pic1.nipic.com/2008-08-14/200881415416310_2.jpg");
+        urls.add("http://img1.tplm123.com/2010/04/03/37478/14834771252048.png");
 
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.setStyleUrl("mapbox://styles/mapbox/streets-v9");
@@ -167,11 +170,7 @@ public class MarkerActivity extends AppCompatActivity {
 //        );
 
         CountryMarkerViewOptions options = new CountryMarkerViewOptions();
-        Bitmap[] bitmaps = new Bitmap[3];
-        bitmaps[0] = BitmapFactory.decodeResource(getResources(),R.drawable.img7);
-        bitmaps[1] = BitmapFactory.decodeResource(getResources(),R.drawable.m);
-        bitmaps[2] = BitmapFactory.decodeResource(getResources(),R.drawable.p);
-        options.resIds(bitmaps);
+        options.resIds(urls);
 //        options.title("超擎");
 //        options.locationMarker(R.drawable.location);
         options.position(new LatLng(39.919361, 116.514511));
@@ -298,7 +297,10 @@ public class MarkerActivity extends AppCompatActivity {
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.view_custom_marker, parent, false);
-                viewHolder.img = (OverlyImg) convertView.findViewById(R.id.img);
+                viewHolder.img1 = (SimpleDraweeView) convertView.findViewById(R.id.img1);
+                viewHolder.img2 = (SimpleDraweeView) convertView.findViewById(R.id.img2);
+                viewHolder.img3 = (SimpleDraweeView) convertView.findViewById(R.id.img3);
+                viewHolder.relativeLayout = (RelativeLayout) convertView.findViewById(R.id.r_layout);
                 viewHolder.locationImg = (ImageView)convertView.findViewById(R.id.location_img);
                 convertView.setTag(viewHolder);
             } else {
@@ -311,11 +313,27 @@ public class MarkerActivity extends AppCompatActivity {
                 if(locationMarker>0){
                     viewHolder.locationImg.setImageResource(locationMarker);
                 }
+                viewHolder.relativeLayout.setRotationX(60f);
             }else {
                 viewHolder.locationImg.setVisibility(View.GONE);
             }
-            viewHolder.img.setImages(marker.getFlagRes());
-            viewHolder.img.setFlat(skew);
+            List<String> flagRes = marker.getFlagRes();
+            for (int i = 0; i < flagRes.size(); i++) {
+                if(i==0){
+                    viewHolder.img1.setImageURI(flagRes.get(0));
+                }else if(i==1){
+                    viewHolder.img2.setVisibility(View.VISIBLE);
+                    viewHolder.img2.setImageURI(flagRes.get(1));
+                }else if(i==2){
+                    viewHolder.img3.setVisibility(View.VISIBLE);
+                    viewHolder.img3.setImageURI(flagRes.get(2));
+                }
+            }
+//            viewHolder.img1.setImageURI("http://img4.imgtn.bdimg.com/it/u=307051832,2958828818&fm=27&gp=0.jpg");
+//            viewHolder.img2.setImageURI("http://pic1.nipic.com/2008-08-14/200881415416310_2.jpg");
+//            viewHolder.img3.setImageURI("http://img1.tplm123.com/2010/04/03/37478/14834771252048.png");
+//            viewHolder.img.setImages(marker.getFlagRes());
+//            viewHolder.img.setFlat(skew);
             return convertView;
         }
 
@@ -355,7 +373,8 @@ public class MarkerActivity extends AppCompatActivity {
         }
 
         private static class ViewHolder {
-            OverlyImg img;
+            SimpleDraweeView img1,img2,img3;
+            RelativeLayout relativeLayout;
             ImageView locationImg;
         }
     }
