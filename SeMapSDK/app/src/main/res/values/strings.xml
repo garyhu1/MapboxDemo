@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SeMapSDK</string>
+    <string name="access_token">pk.eyJ1IjoiZ2FyeWh1IiwiYSI6ImNqZWYwdDF5aDFjODkzM28ycTBvMjM4NWsifQ.JU9SXOvw99tVm7fXxL4MrQ</string>
+    <string name="rationale_location">该应用需要开启定位功能.</string>
+</resources>
