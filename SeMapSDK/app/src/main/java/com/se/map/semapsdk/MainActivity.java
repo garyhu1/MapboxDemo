@@ -28,6 +28,8 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.TrackingSettings;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngineListener;
+import com.se.map.semapsdk.net.GenerateSignActivity;
+import com.se.map.semapsdk.net.PoiContentActivity;
 import com.se.map.semapsdk.permission.EasyPermission;
 import com.se.map.semapsdk.permission.PermissionCallBackM;
 
@@ -64,6 +66,27 @@ public class MainActivity extends AppCompatActivity implements EasyPermission.Pe
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this,MarkerAddActivity.class));
+            }
+        });
+
+        findViewById(R.id.poi_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,PoiContentActivity.class));
+            }
+        });
+
+        findViewById(R.id.my_location_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,MyLocationActivity.class));
+            }
+        });
+
+        findViewById(R.id.sign_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,GenerateSignActivity.class));
             }
         });
 

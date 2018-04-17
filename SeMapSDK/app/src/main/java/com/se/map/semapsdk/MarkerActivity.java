@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerView;
 import com.mapbox.mapboxsdk.annotations.MarkerViewManager;
@@ -35,6 +37,7 @@ import com.mapbox.mapboxsdk.geometry.VisibleRegion;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.se.map.semapsdk.net.PoiRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +53,9 @@ public class MarkerActivity extends AppCompatActivity {
     private MapView mapView;
     private MapboxMap mapboxMap;
     private ArrayList<String> urls;
+
+    private List<PoiEntity.DataBean> data;
+    private MarkerViewManager markerViewManager ;
 
 
     private final static int LOAD_IMG = 0x001;
@@ -80,11 +86,30 @@ public class MarkerActivity extends AppCompatActivity {
 
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(MapboxMap mapboxMap) {
+            public void onMapReady(final MapboxMap mapboxMap) {
                 MarkerActivity.this.mapboxMap = mapboxMap;
+                markerViewManager = mapboxMap.getMarkerViewManager();
                 mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.5427,116.2317),5));
-//                addMaker(mapboxMap);
+                addMaker(mapboxMap);
                 addImgMaker(mapboxMap);
+                loadMarker();
+
+                mapboxMap.addOnCameraMoveCancelListener(new MapboxMap.OnCameraMoveCanceledListener() {
+                    @Override
+                    public void onCameraMoveCanceled() {
+                        Log.e("garyhu","over");
+//                        show();
+                    }
+                });
+
+                mapboxMap.addOnCameraMoveListener(new MapboxMap.OnCameraMoveListener() {
+                    @Override
+                    public void onCameraMove() {
+//                        mapboxMap.removeAnnotations();
+//                        show();
+                    }
+                });
+
             }
         });
 
@@ -110,6 +135,52 @@ public class MarkerActivity extends AppCompatActivity {
             }
         });
 
+        mapView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+    }
+
+    private void loadMarker(){
+
+        PoiRequest poiRequest = new PoiRequest();
+
+        poiRequest.request();
+
+        poiRequest.addPoiListener(new PoiRequest.PoiCallback() {
+            @Override
+            public void showPoiContent(PoiEntity poiEntity) {
+                data = poiEntity.getData();
+                show();
+            }
+        });
+    }
+
+    public void show(){
+        List<List<PoiEntity.DataBean>> container = new ArrayList<>();
+        DistanceUtil.filterPoiData(data,container);
+        for (int i = 0; i < container.size(); i++) {
+            List<PoiEntity.DataBean> dataBeans = container.get(i);
+            PoiEntity.DataBean dataBean = dataBeans.get(0);
+            ArrayList<String> urls = new ArrayList<>();
+            for (int j = 0; j < dataBeans.size(); j++) {
+                if(j<3){
+                    PoiEntity.DataBean dataBean1 = dataBeans.get(j);
+                    urls.add(dataBean1.getImg());
+                }
+            }
+            CountryMarkerViewOptions options = new CountryMarkerViewOptions();
+            options.resIds(urls);
+            options.position(new LatLng(dataBean.getX(), dataBean.getY()));
+            options.skew(false);
+            options.flat(false);
+            mapboxMap.addMarker(options);
+        }
+        markerViewManager.addMarkerViewAdapter(new CountryAdapter(MarkerActivity.this, mapboxMap));
     }
 
     /**
@@ -119,6 +190,7 @@ public class MarkerActivity extends AppCompatActivity {
         // 设置maker样式和位置
         IconFactory iconFactory = IconFactory.getInstance(this);
         Icon icon = iconFactory.fromResource(R.mipmap.maker);
+        Icon icon1 = iconFactory.fromResource(R.mipmap.ic_launcher_round);
         MarkerOptions markerOptions1 = new MarkerOptions()
                 .position(new LatLng(31.619861, 120.515911))
                 .title("MarkerTitle")
@@ -134,10 +206,16 @@ public class MarkerActivity extends AppCompatActivity {
                 .title("MarkerTitle")
                 .snippet("MarkerInfo")
                 .icon(icon);
+        MarkerOptions markerOptions4= new MarkerOptions()
+                .position(new LatLng(39.62861, 116.515911))
+                .title("MarkerTitle")
+                .snippet("MarkerInfo")
+                .icon(icon1);
         // 添加maker
         mapboxMap.addMarker(markerOptions1);
         mapboxMap.addMarker(markerOptions2);
         mapboxMap.addMarker(markerOptions3);
+        mapboxMap.addMarker(markerOptions4);
 //        如果想添加多个maker，需要重复以上操作，
 //        删除时需要遍历删除 如下
 //        for (Marker marker : mapboxMap.getMarkers()) {
@@ -147,65 +225,36 @@ public class MarkerActivity extends AppCompatActivity {
 
     // 添加图片标记
     public void addImgMaker(MapboxMap mapboxMap){
-//        Icon picIcon = IconFactory.getInstance(this).fromResource(R.mipmap.ic_launcher);
-//        Icon markerPic = IconFactory.getInstance(this).fromResource(R.mipmap.maker);
-//
-//        mapboxMap.addMarker(new MarkerViewOptions()
-//                .title("超擎")
-//                .position(new LatLng(38.629861, 116.524911))
-//                .icon(picIcon)
-//        );
-//        MarkerViewOptions markerOptions0 = new MarkerViewOptions()
-//                .position(new LatLng(31.619861, 120.515911))
-//                .title("MarkerTitle")
-//                .snippet("MarkerInfo")
-//                .icon(picIcon);
-//        mapboxMap.addMarker(markerOptions0);
+        Icon picIcon = IconFactory.getInstance(this).fromResource(R.mipmap.ic_launcher);
+        Icon markerPic = IconFactory.getInstance(this).fromResource(R.mipmap.maker);
+
+        mapboxMap.addMarker(new MarkerViewOptions()
+                .title("超擎")
+                .position(new LatLng(38.629861, 116.524911))
+                .icon(picIcon)
+        );
+        MarkerViewOptions markerOptions0 = new MarkerViewOptions()
+                .position(new LatLng(31.619861, 120.515911))
+
+                .icon(picIcon);
+        mapboxMap.addMarker(markerOptions0);
 
         MarkerViewManager markerViewManager = mapboxMap.getMarkerViewManager();
 
-//        mapboxMap.addMarker(new TextMarkerViewOptions()
-//                .text("超擎")
-//                .position(new LatLng(39.629861, 117.594911))
-//        );
+        mapboxMap.addMarker(new TextMarkerViewOptions()
+                .text("超擎")
+                .position(new LatLng(39.629861, 117.594911))
+        );
 
-        CountryMarkerViewOptions options = new CountryMarkerViewOptions();
-        options.resIds(urls);
-//        options.title("超擎");
-//        options.locationMarker(R.drawable.location);
-        options.position(new LatLng(39.919361, 116.514511));
-        options.skew(true);
-        options.flat(false);
-        MarkerView markerView = mapboxMap.addMarker(options);
-//        markerView.hideInfoWindow();
+        markerViewManager.addMarkerViewAdapter(new TextAdapter(MarkerActivity.this, mapboxMap));
 
-        // if you want to customise a ViewMarker you need to extend ViewMarker and provide an adapter implementation
-        // set adapters for child classes of ViewMarker
-        markerViewManager.addMarkerViewAdapter(new CountryAdapter(MarkerActivity.this, mapboxMap));
+        MarkerOptions m = new MarkerOptions()
+                .position(new LatLng(39.919361, 116.514511))
+                .title("MarkerTitle")
+                .snippet("MarkerInfo")
+                .icon(markerPic);
+        mapboxMap.addMarker(m);
 
-
-//        markerViewManager.addMarkerViewAdapter(new TextAdapter(MarkerActivity.this, mapboxMap));
-
-//        MarkerOptions m = new MarkerOptions()
-//                .position(new LatLng(39.919361, 116.514511))
-//                .title("MarkerTitle")
-//                .snippet("MarkerInfo")
-//                .icon(markerPic);
-//        mapboxMap.addMarker(m);
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Bitmap[] bitmaps = new Bitmap[urls.length];
-//                for (int i = 0; i < urls.length; i++) {
-//                    bitmaps[i] = returnBitMap(urls[i]);
-//                }
-//                Message msg = new Message();
-//                msg.what = LOAD_IMG;
-//                msg.obj = bitmaps;
-//                handler.sendMessage(msg);
-//            }
-//        }).start();
     }
 
     /**

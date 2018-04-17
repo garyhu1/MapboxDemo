@@ -147,6 +147,10 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
 
                 @Override
                 public void onLocationChanged(Location location) {
+                    Location myLocation = mMapboxMap.getMyLocation();
+                    Log.e("garyhu","myLocation ------->"+myLocation);
+                    Log.e("garyhu","lat ------->"+myLocation.getLatitude());
+                    Log.e("garyhu","lon -------->"+myLocation.getLongitude());
                     if (location != null) {
                         mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location), 5), 1000);
                         Geocoder geocoder = new Geocoder(LocationActivity.this, Locale.CHINESE);
@@ -188,13 +192,13 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
             floatingActionButton.setImageResource(R.drawable.location_disable);
 
             // 让地图始终以定位点为中心，无法滑动
-            trackingSettings.setDismissAllTrackingOnGesture(false);
+//            trackingSettings.setDismissAllTrackingOnGesture(false);
             // 启用位置和方位跟踪
-            trackingSettings.setMyLocationTrackingMode(MyLocationTracking.TRACKING_FOLLOW);
-            trackingSettings.setMyBearingTrackingMode(MyBearingTracking.COMPASS);
+//            trackingSettings.setMyLocationTrackingMode(MyLocationTracking.TRACKING_FOLLOW);
+//            trackingSettings.setMyBearingTrackingMode(MyBearingTracking.COMPASS);
         } else {
             // 让地图始终以定位点为中心，无法滑动
-            trackingSettings.setDismissAllTrackingOnGesture(true);
+//            trackingSettings.setDismissAllTrackingOnGesture(true);
             floatingActionButton.setImageResource(R.drawable.my_location);
         }
         //添加或移除定位图层
@@ -228,8 +232,9 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
         if (locationEngine != null && locationEngineListener != null) {
             locationEngine.activate();
             if (ActivityCompat.checkSelfPermission(LocationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(LocationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                locationEngine.requestLocationUpdates();
+                return;
             }
+            locationEngine.requestLocationUpdates();
             locationEngine.addLocationEngineListener(locationEngineListener);
         }
     }

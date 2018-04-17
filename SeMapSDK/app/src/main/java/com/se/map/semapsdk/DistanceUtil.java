@@ -1,5 +1,8 @@
 package com.se.map.semapsdk;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2018/4/8.
  */
@@ -21,4 +24,54 @@ public class DistanceUtil {
         s = Math.round(s * 10000) / 10000;
         return s; //返回 单位是m
     }
+
+    public static double getValue(double x,double y){
+        return Math.sqrt(x*x+y*y);
+    }
+
+    public static void filterPoiData(List<PoiEntity.DataBean> data,List<List<PoiEntity.DataBean>> container){
+        if(data==null){
+            return;
+        }
+
+        if(data.size()<2){
+            container.add(data);
+            return ;
+        }
+        double standard = 0.005;
+        List<PoiEntity.DataBean> list1 = new ArrayList<>();
+        List<PoiEntity.DataBean> list2 = new ArrayList<>();
+        PoiEntity.DataBean base = data.get(0);
+        double a = distance(base.getX(),base.getY());
+        for (int i = 0; i < data.size(); i++) {
+            if(i==0){
+                list1.add(data.get(0));
+            }else {
+                PoiEntity.DataBean dataBean = data.get(i);
+                double b = distance(dataBean.getX(),dataBean.getY());
+                if(Math.abs(a-b)<=standard){
+                    list1.add(dataBean);
+                }else {
+                    list2.add(data.get(i));
+                }
+            }
+        }
+
+        container.add(list1);
+
+        if(list2.size()==1){
+            container.add(list2);
+            return ;
+        }else if(list2.size()==0){
+            return ;
+        }else {
+            filterPoiData(list2,container);
+        }
+    }
+
+    public static double distance(double lat,double lon){
+        return Math.sqrt(lat*lat+lon*lon);
+    }
+
+
 }

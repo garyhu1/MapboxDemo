@@ -28,5 +28,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="Add Maker Map"/>
+    <Button
+        android:id="@+id/poi_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="search Poi Content"/>
+
+    <Button
+        android:id="@+id/my_location_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="My Location"/>
+
+    <Button
+        android:id="@+id/sign_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Generate Sign"/>
 
 </LinearLayout>
