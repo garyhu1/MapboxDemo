@@ -1,4 +1,4 @@
-package com.se.map.semapsdk;
+package com.se.map.semapsdk.utils;
 
 import android.content.Context;
 import android.view.Gravity;

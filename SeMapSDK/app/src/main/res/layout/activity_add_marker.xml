@@ -33,11 +33,23 @@
             android:text="reset"/>
     </RelativeLayout>
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/map_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:mapbox_uiCompass="false"
-        app:mapbox_uiLogo="false"
-        app:mapbox_uiAttribution="false"/>
+        android:layout_height="match_parent">
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:mapbox_uiCompass="false"
+            app:mapbox_apiBaseUrl="https://api.mapbox.cn"
+            app:mapbox_uiLogo="false"
+            app:mapbox_uiAttribution="false"/>
+        <TextView
+            android:id="@+id/zoom_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text="ZOOM : "/>
+    </RelativeLayout>
 </LinearLayout>

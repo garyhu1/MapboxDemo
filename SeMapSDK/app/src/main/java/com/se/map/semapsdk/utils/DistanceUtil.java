@@ -1,4 +1,7 @@
-package com.se.map.semapsdk;
+package com.se.map.semapsdk.utils;
+
+import com.se.map.semapsdk.PoiEntity;
+import com.se.map.semapsdk.model.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +32,7 @@ public class DistanceUtil {
         return Math.sqrt(x*x+y*y);
     }
 
-    public static void filterPoiData(List<PoiEntity.DataBean> data,List<List<PoiEntity.DataBean>> container){
+    public static void filterPoiData(List<PoiEntity.DataBean> data, List<List<PoiEntity.DataBean>> container){
         if(data==null){
             return;
         }
@@ -71,6 +74,49 @@ public class DistanceUtil {
 
     public static double distance(double lat,double lon){
         return Math.sqrt(lat*lat+lon*lon);
+    }
+
+
+    /**
+     * 获取区域编码
+     */
+    public static Point[] obtainAreaCode(double left, double right, double top, double bottom,double zoom){
+        int n,m;
+        if(zoom<5){
+            n = 1;
+            m = 1;
+        }else if(zoom<6){
+            n=m=2;
+        }else if(zoom<= 8){
+            n = 4;
+            m = 6;
+        }else if(zoom<12){
+            n = m = 3;
+        }else if(zoom<=14){
+            n = m = 2;
+        }else {
+            n = m =1;
+        }
+        List<Point> codes = new ArrayList<>();
+        double x = (right-left)/n;
+        double y = (bottom-top)/m;
+        //第一个点的位置
+        double x1 = left+x/2;
+        double y1 = top+y/2;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                codes.add(new Point(x1+x*j,y1+y*i));
+            }
+        }
+        codes.add(new Point(left,top));
+        codes.add(new Point(left,bottom));
+        codes.add(new Point(right,top));
+        codes.add(new Point(right,bottom));
+        Point[] areaCodes = new Point[codes.size()];
+        for (int i = 0; i < codes.size(); i++) {
+            areaCodes[i] = codes.get(i);
+        }
+        return areaCodes;
     }
 
 

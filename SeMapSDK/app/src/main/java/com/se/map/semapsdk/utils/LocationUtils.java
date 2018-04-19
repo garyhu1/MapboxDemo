@@ -1,4 +1,4 @@
-package com.se.map.semapsdk;
+package com.se.map.semapsdk.utils;
 
 import android.Manifest;
 import android.content.Context;

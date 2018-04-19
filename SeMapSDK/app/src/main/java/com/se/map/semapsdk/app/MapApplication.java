@@ -1,9 +1,10 @@
-package com.se.map.semapsdk;
+package com.se.map.semapsdk.app;
 
 import android.app.Application;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.se.map.semapsdk.R;
 
 /**
  * Created by Administrator on 2018/3/22.

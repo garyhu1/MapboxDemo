@@ -18,8 +18,8 @@ import retrofit2.http.QueryMap;
 
 public interface GetRequest {
 
-    @GET("/get_poi_content")
-    Call<PoiEntity> getPoiContent(@Query("id") int id);
+    @GET("/meta/v1/LUOKUANGOS/rec/get_poi_content")
+    Call<PoiEntity> getPoiContent(@QueryMap HashMap<String,Object> map);
 
     @GET("/api/location")
     Call<CityCodeEntity> getLocationCode(@QueryMap HashMap<String,String> map);

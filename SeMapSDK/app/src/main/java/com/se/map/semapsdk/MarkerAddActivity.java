@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 public class MarkerAddActivity extends AppCompatActivity {
 
     private MapView mapView;
+    private TextView zoomText;
     private MapboxMap mapboxMap;
     private ArrayList<MarkerOptions> markerList = new ArrayList<>();
 
@@ -37,8 +40,9 @@ public class MarkerAddActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_add_marker);
 
+        zoomText = (TextView) findViewById(R.id.zoom_text);
         mapView = (MapView) findViewById(R.id.map_view);
-        mapView.setStyleUrl("mapbox://styles/mapbox/streets-v9");
+        mapView.setStyleUrl("mapbox://styles/mapbox/streets-zh-v1");
         mapView.onCreate(savedInstanceState);
 
         mapView.getMapAsync(new OnMapReadyCallback() {
@@ -66,6 +70,13 @@ public class MarkerAddActivity extends AppCompatActivity {
                     markerList = savedInstanceState.getParcelableArrayList(STATE_MARKER_LIST);
                     mapboxMap.addMarkers(markerList);
                 }
+
+                mapboxMap.setOnCameraChangeListener(new MapboxMap.OnCameraChangeListener() {
+                    @Override
+                    public void onCameraChange(CameraPosition position) {
+                        zoomText.setText("zoom : "+position.zoom);
+                    }
+                });
             }
         });
 

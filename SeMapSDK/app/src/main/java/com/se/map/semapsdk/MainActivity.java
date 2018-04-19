@@ -3,35 +3,19 @@ package com.se.map.semapsdk;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
-import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Icon;
-import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.constants.MyBearingTracking;
-import com.mapbox.mapboxsdk.constants.MyLocationTracking;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.location.LocationSource;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.maps.TrackingSettings;
-import com.mapbox.services.android.telemetry.location.LocationEngine;
-import com.mapbox.services.android.telemetry.location.LocationEngineListener;
+import com.se.map.semapsdk.areacode.AreaCodeActivity;
 import com.se.map.semapsdk.net.GenerateSignActivity;
 import com.se.map.semapsdk.net.PoiContentActivity;
 import com.se.map.semapsdk.permission.EasyPermission;
 import com.se.map.semapsdk.permission.PermissionCallBackM;
+import com.se.map.semapsdk.utils.CustomToast;
+import com.se.map.semapsdk.utils.DistanceUtil;
 
 public class MainActivity extends AppCompatActivity implements EasyPermission.PermissionCallback {
 
@@ -87,6 +71,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermission.Pe
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this,GenerateSignActivity.class));
+            }
+        });
+
+        findViewById(R.id.area_code_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,AreaCodeActivity.class));
             }
         });
 
