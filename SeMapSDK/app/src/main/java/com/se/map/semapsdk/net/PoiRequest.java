@@ -25,28 +25,28 @@ public class PoiRequest {
     }
 
     public void request(){
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://192.168.1.150")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//
-//        GetRequest getRequest = retrofit.create(GetRequest.class);
-//
-//        Call<PoiEntity> call = getRequest.getPoiContent(2);
-//
-//        call.enqueue(new Callback<PoiEntity>() {
-//            @Override
-//            public void onResponse(Call<PoiEntity> call, Response<PoiEntity> response) {
-//                if(poiCallback!=null){
-//                    poiCallback.showPoiContent(response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<PoiEntity> call, Throwable t) {
-//
-//            }
-//        });
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.1.239")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        GetRequest getRequest = retrofit.create(GetRequest.class);
+
+        Call<PoiEntity> call = getRequest.getPoiContent(2);
+
+        call.enqueue(new Callback<PoiEntity>() {
+            @Override
+            public void onResponse(Call<PoiEntity> call, Response<PoiEntity> response) {
+                if(poiCallback!=null){
+                    poiCallback.showPoiContent(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PoiEntity> call, Throwable t) {
+
+            }
+        });
     }
 
     public interface PoiCallback {

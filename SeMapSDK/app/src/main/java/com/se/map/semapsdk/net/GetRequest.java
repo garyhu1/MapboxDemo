@@ -21,6 +21,9 @@ public interface GetRequest {
     @GET("/meta/v1/LUOKUANGOS/rec/get_poi_content")
     Call<PoiEntity> getPoiContent(@QueryMap HashMap<String,Object> map);
 
+    @GET("/get_poi_content")
+    Call<PoiEntity> getPoiContent(@Query("id") int id);
+
     @GET("/api/location")
     Call<CityCodeEntity> getLocationCode(@QueryMap HashMap<String,String> map);
 }

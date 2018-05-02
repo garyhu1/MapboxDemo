@@ -30,5 +30,6 @@
         android:layout_height="match_parent"
         app:mapbox_uiCompass="false"
         app:mapbox_uiLogo="false"
+        app:mapbox_apiBaseUrl="https://api.mapbox.cn"
         app:mapbox_uiAttribution="false"/>
 </LinearLayout>

@@ -1,5 +1,11 @@
 package com.se.map.semapsdk.utils;
 
+import android.content.Context;
+import android.graphics.PointF;
+
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.Projection;
 import com.se.map.semapsdk.PoiEntity;
 import com.se.map.semapsdk.model.Point;
 
@@ -32,7 +38,7 @@ public class DistanceUtil {
         return Math.sqrt(x*x+y*y);
     }
 
-    public static void filterPoiData(List<PoiEntity.DataBean> data, List<List<PoiEntity.DataBean>> container){
+    public static void filterPoiData(MapboxMap mapboxMap,List<PoiEntity.DataBean> data, List<List<PoiEntity.DataBean>> container, double standard){
         if(data==null){
             return;
         }
@@ -41,17 +47,20 @@ public class DistanceUtil {
             container.add(data);
             return ;
         }
-        double standard = 0.005;
+
+        Projection projection = mapboxMap.getProjection();
         List<PoiEntity.DataBean> list1 = new ArrayList<>();
         List<PoiEntity.DataBean> list2 = new ArrayList<>();
         PoiEntity.DataBean base = data.get(0);
-        double a = distance(base.getX(),base.getY());
+        PointF pointF = projection.toScreenLocation(new LatLng(base.getY(),base.getX()));
+        double a = distance(pointF.x,pointF.y);
         for (int i = 0; i < data.size(); i++) {
             if(i==0){
                 list1.add(data.get(0));
             }else {
                 PoiEntity.DataBean dataBean = data.get(i);
-                double b = distance(dataBean.getX(),dataBean.getY());
+                PointF pointF1 = projection.toScreenLocation(new LatLng(dataBean.getY(),dataBean.getX()));
+                double b = distance(pointF1.x,pointF1.y);
                 if(Math.abs(a-b)<=standard){
                     list1.add(dataBean);
                 }else {
@@ -60,7 +69,15 @@ public class DistanceUtil {
             }
         }
 
-        container.add(list1);
+        if(list1.size()>3){
+            List<PoiEntity.DataBean> list3 = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                list3.add(list1.get(i));
+            }
+            container.add(list3);
+        }else {
+            container.add(list1);
+        }
 
         if(list2.size()==1){
             container.add(list2);
@@ -68,8 +85,13 @@ public class DistanceUtil {
         }else if(list2.size()==0){
             return ;
         }else {
-            filterPoiData(list2,container);
+            filterPoiData(mapboxMap,list2,container,standard);
         }
+    }
+
+    public static float dp2px(Context context,float dpValue){
+        float scale=context.getResources().getDisplayMetrics().density;
+        return (dpValue*scale+0.5f);
     }
 
     public static double distance(double lat,double lon){
@@ -81,29 +103,33 @@ public class DistanceUtil {
      * 获取区域编码
      */
     public static Point[] obtainAreaCode(double left, double right, double top, double bottom,double zoom){
-        int n,m;
-        if(zoom<5){
-            n = 1;
-            m = 1;
-        }else if(zoom<6){
-            n=m=2;
-        }else if(zoom<= 8){
+        int n;
+        if(zoom<4){// 省
             n = 4;
-            m = 6;
-        }else if(zoom<12){
-            n = m = 3;
-        }else if(zoom<=14){
-            n = m = 2;
-        }else {
-            n = m =1;
+        }else if(zoom<=5){//省
+            n= 3;
+        }else if(zoom<= 6){//省
+            n = 2;
+        }else if(zoom <= 7){//市
+            n = 4;
+        }else if(zoom<=9){//市
+            n = 2;
+        }else if(zoom<=10){//区
+            n = 4;
+        }else if(zoom<12){//区
+            n = 3;
+        }else if(zoom<=14){//区
+            n = 2;
+        }else {// 区
+            n = 1;
         }
         List<Point> codes = new ArrayList<>();
         double x = (right-left)/n;
-        double y = (bottom-top)/m;
+        double y = (bottom-top)/n;
         //第一个点的位置
         double x1 = left+x/2;
         double y1 = top+y/2;
-        for (int i = 0; i < m; i++) {
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 codes.add(new Point(x1+x*j,y1+y*i));
             }

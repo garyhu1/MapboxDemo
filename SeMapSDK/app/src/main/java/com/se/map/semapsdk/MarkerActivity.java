@@ -7,6 +7,9 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,6 +48,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 
 public class MarkerActivity extends AppCompatActivity {
@@ -80,7 +84,7 @@ public class MarkerActivity extends AppCompatActivity {
         urls.add("http://img1.tplm123.com/2010/04/03/37478/14834771252048.png");
 
         mapView = (MapView) findViewById(R.id.map_view);
-        mapView.setStyleUrl("mapbox://styles/mapbox/streets-v9");
+        mapView.setStyleUrl("mapbox://styles/mapbox/streets-zh-v1");
         mapView.onCreate(savedInstanceState);
 
         mapView.getMapAsync(new OnMapReadyCallback() {
@@ -160,26 +164,100 @@ public class MarkerActivity extends AppCompatActivity {
     }
 
     public void show(){
+        double standarad = DistanceUtil.dp2px(this,50);
         List<List<PoiEntity.DataBean>> container = new ArrayList<>();
-        DistanceUtil.filterPoiData(data,container);
+        DistanceUtil.filterPoiData(mapboxMap,data,container,standarad);
+//        for (int i = 0; i < container.size(); i++) {
+//            List<PoiEntity.DataBean> dataBeans = container.get(i);
+//            PoiEntity.DataBean dataBean = dataBeans.get(0);
+//            ArrayList<String> urls = new ArrayList<>();
+//            for (int j = 0; j < dataBeans.size(); j++) {
+//                if(j<3){
+//                    PoiEntity.DataBean dataBean1 = dataBeans.get(j);
+//                    urls.add(dataBean1.getImg());
+//                }
+//            }
+//            CountryMarkerViewOptions options = new CountryMarkerViewOptions();
+//            options.resIds(urls);
+//            options.position(new LatLng(dataBean.getY(), dataBean.getX()));
+//            options.skew(false);
+//            options.flat(false);
+//            mapboxMap.addMarker(options);
+//        }
+//        markerViewManager.addMarkerViewAdapter(new CountryAdapter(MarkerActivity.this, mapboxMap));
+        IconFactory instance = IconFactory.getInstance(this);
         for (int i = 0; i < container.size(); i++) {
             List<PoiEntity.DataBean> dataBeans = container.get(i);
             PoiEntity.DataBean dataBean = dataBeans.get(0);
-            ArrayList<String> urls = new ArrayList<>();
-            for (int j = 0; j < dataBeans.size(); j++) {
-                if(j<3){
-                    PoiEntity.DataBean dataBean1 = dataBeans.get(j);
-                    urls.add(dataBean1.getImg());
+            View view = LayoutInflater.from(this).inflate(R.layout.view_custom_marker,null);
+            SimpleDraweeView img1 = (SimpleDraweeView) view.findViewById(R.id.img1);
+            SimpleDraweeView img2 = (SimpleDraweeView) view.findViewById(R.id.img2);
+            SimpleDraweeView img3 = (SimpleDraweeView) view.findViewById(R.id.img3);
+            RelativeLayout relativeLayout = (RelativeLayout) view.findViewById(R.id.r_layout);
+            ImageView locationImg = (ImageView)view.findViewById(R.id.location_img);
+            for (int j = 0; j < dataBeans.size(); i++) {
+                if(j==0){
+                    img1.setImageURI(dataBeans.get(0).getImg());
+                }else if(j==1){
+                    img2.setVisibility(View.VISIBLE);
+                    img2.setImageURI(dataBeans.get(1).getImg());
+                }else if(j==2){
+                    img3.setVisibility(View.VISIBLE);
+                    img3.setImageURI(dataBeans.get(2).getImg());
                 }
             }
-            CountryMarkerViewOptions options = new CountryMarkerViewOptions();
-            options.resIds(urls);
-            options.position(new LatLng(dataBean.getX(), dataBean.getY()));
-            options.skew(false);
-            options.flat(false);
-            mapboxMap.addMarker(options);
+            Bitmap bitmap = loadBitmapFromView(view);
+            Icon icon = instance.fromBitmap(bitmap);
+            MarkerOptions option = new MarkerOptions()
+                    .position(new LatLng(dataBean.getY(), dataBean.getX()))
+                    .icon(icon);
+            mapboxMap.addMarker(option);
         }
-        markerViewManager.addMarkerViewAdapter(new CountryAdapter(MarkerActivity.this, mapboxMap));
+    }
+
+    private Bitmap loadBitmapFromView(View v) {
+        int w = v.getWidth();
+        int h = v.getHeight();
+
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmp);
+
+        c.drawColor(Color.WHITE);
+        /** 如果不设置canvas画布为白色，则生成透明 */
+
+        v.layout(0, 0, w, h);
+        v.draw(c);
+
+        return bmp;
+    }
+
+    // 为图片target添加水印
+    private Bitmap createWatermarkBitmap(Bitmap target, String str) {
+        int w = target.getWidth();
+        int h = target.getHeight();
+
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+
+        Paint p = new Paint();
+
+        // 水印的颜色
+        p.setColor(Color.RED);
+
+        // 水印的字体大小
+        p.setTextSize(16);
+
+        p.setAntiAlias(true);// 去锯齿
+
+        canvas.drawBitmap(target, 0, 0, p);
+
+        // 在中间位置开始添加水印
+        canvas.drawText(str, w / 2, h / 2, p);
+
+        canvas.save(Canvas.ALL_SAVE_FLAG);
+        canvas.restore();
+
+        return bmp;
     }
 
     /**
@@ -191,7 +269,7 @@ public class MarkerActivity extends AppCompatActivity {
         Icon icon = iconFactory.fromResource(R.mipmap.maker);
         Icon icon1 = iconFactory.fromResource(R.mipmap.ic_launcher_round);
         MarkerOptions markerOptions1 = new MarkerOptions()
-                .position(new LatLng(31.619861, 120.515911))
+                .position(new LatLng(31.264502,120.739194))
                 .title("MarkerTitle")
                 .snippet("MarkerInfo")
                 .icon(icon);

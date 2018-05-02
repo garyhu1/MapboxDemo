@@ -20,6 +20,8 @@ import android.widget.TextView;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.MyBearingTracking;
+import com.mapbox.mapboxsdk.constants.MyLocationTracking;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -30,6 +32,8 @@ import com.mapbox.services.android.telemetry.location.LocationEngineListener;
 import com.se.map.semapsdk.permission.EasyPermission;
 import com.se.map.semapsdk.permission.PermissionCallBackM;
 import com.se.map.semapsdk.utils.CustomToast;
+import com.se.map.semapsdk.utils.Gps;
+import com.se.map.semapsdk.utils.MyLocationUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -64,7 +68,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
         loadText = (TextView) findViewById(R.id.load);
         addressText = (TextView) findViewById(R.id.address);
         mapView = (MapView) findViewById(R.id.map_view);
-        mapView.setStyleUrl("mapbox://styles/mapbox/streets-v9");
+        mapView.setStyleUrl("mapbox://styles/mapbox/streets-zh-v1");
         mapView.onCreate(savedInstanceState);
 
         locationEngine = Mapbox.getLocationEngine();
@@ -91,6 +95,13 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                 if(mMapboxMap!=null){
                     loadText.setText("loadding");
                     toggleGps();
+//                    mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(31.264502,120.739194), 18), 1000);
+//                    TrackingSettings trackingSettings = mMapboxMap.getTrackingSettings();
+//                    // 让地图始终以定位点为中心，无法滑动
+//                    trackingSettings.setDismissAllTrackingOnGesture(false);
+//                    // 启用位置和方位跟踪
+//                    trackingSettings.setMyLocationTrackingMode(MyLocationTracking.TRACKING_FOLLOW);
+//                    trackingSettings.setMyBearingTrackingMode(MyBearingTracking.COMPASS);
                 }
             }
         });
@@ -135,7 +146,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                 lastlocation = null;
             }
             if (lastlocation != null) {
-                mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastlocation), 5), 1000);
+                mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastlocation), 12), 1000);
             }
             // 定位监听
             locationEngineListener = new LocationEngineListener() {
@@ -146,58 +157,55 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
 
                 @Override
                 public void onLocationChanged(Location location) {
-                    Location myLocation = mMapboxMap.getMyLocation();
-                    Log.e("garyhu","myLocation ------->"+myLocation);
-                    Log.e("garyhu","lat ------->"+myLocation.getLatitude());
-                    Log.e("garyhu","lon -------->"+myLocation.getLongitude());
-                    if (location != null) {
-                        mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location), 5), 1000);
-                        Geocoder geocoder = new Geocoder(LocationActivity.this, Locale.CHINESE);
-                        try {
-                            StringBuilder sb = new StringBuilder();
-                            List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                            for(Address address : fromLocation){
-                                Log.e("garyhu","address == "+address.getCountryName());// 中国
-                                Log.e("garyhu","getAdminArea == "+address.getAdminArea());//江苏省
-                                Log.e("garyhu","getFeatureName == "+address.getFeatureName());
-                                Log.e("garyhu","getSubLocality == "+address.getSubLocality());
-                                Log.e("garyhu","getLocality == "+address.getLocality());//苏州市
-                                sb.append(address.getCountryName());
-                                sb.append(address.getAdminArea());
-                                sb.append(address.getLocality());
-                                sb.append(address.getSubLocality());
-                                sb.append(address.getAddressLine(2));
-                                for(int i=0;i < address.getMaxAddressLineIndex();i++){
-                                    Log.e("garyhu","getAddressLine == "+address.getAddressLine(i));
-                                }
-//                                Log.e("garyhu","getAddressLine0 == "+address.getAddressLine(0));
-//                                Log.e("garyhu","getAddressLine1 == "+address.getAddressLine(1));
-//                                Log.e("garyhu","getAddressLine2 == "+address.getAddressLine(2));
-//                                Log.e("garyhu","getAddressLin3 == "+address.getAddressLine(3));
-                            }
-                            loadText.setText("加载完成");
-                            addressText.setText(sb.toString());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        locationEngine.removeLocationEngineListener(this);
-                    }
+//                    if (location != null) {
+//                        Log.e("garyhu","lat ------->"+location.getLatitude());
+//                        Log.e("garyhu","lon -------->"+location.getLongitude());
+//                        Gps gps = MyLocationUtils.transform2Mars(location.getLatitude(), location.getLongitude());
+//                        mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gps.getWgLat(),gps.getWgLon()), 5), 1000);
+//                        Geocoder geocoder = new Geocoder(LocationActivity.this, Locale.CHINESE);
+//                        try {
+//                            StringBuilder sb = new StringBuilder();
+//                            List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+//                            for(Address address : fromLocation){
+//                                Log.e("garyhu","address == "+address.getCountryName());// 中国
+//                                Log.e("garyhu","getAdminArea == "+address.getAdminArea());//江苏省
+//                                Log.e("garyhu","getFeatureName == "+address.getFeatureName());
+//                                Log.e("garyhu","getSubLocality == "+address.getSubLocality());
+//                                Log.e("garyhu","getLocality == "+address.getLocality());//苏州市
+//                                sb.append(address.getCountryName());
+//                                sb.append(address.getAdminArea());
+//                                sb.append(address.getLocality());
+//                                sb.append(address.getSubLocality());
+//                                sb.append(address.getAddressLine(2));
+//                                for(int i=0;i < address.getMaxAddressLineIndex();i++){
+//                                    Log.e("garyhu","getAddressLine == "+address.getAddressLine(i));
+//                                }
+//                            }
+//                            loadText.setText("加载完成");
+//                            addressText.setText(sb.toString());
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        locationEngine.removeLocationEngineListener(this);
+//                    }
                 }
             };
             //设置监听器
-            locationEngine.addLocationEngineListener(locationEngineListener);
-            locationEngine.activate();
+//            locationEngine.addLocationEngineListener(locationEngineListener);
+//            locationEngine.activate();
             floatingActionButton.setImageResource(R.drawable.location_disable);
 
+            mMapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(31.264502,120.739194), 18), 1000);
+
             // 让地图始终以定位点为中心，无法滑动
-//            trackingSettings.setDismissAllTrackingOnGesture(false);
+            trackingSettings.setDismissAllTrackingOnGesture(false);
             // 启用位置和方位跟踪
-//            trackingSettings.setMyLocationTrackingMode(MyLocationTracking.TRACKING_FOLLOW);
-//            trackingSettings.setMyBearingTrackingMode(MyBearingTracking.COMPASS);
+            trackingSettings.setMyLocationTrackingMode(MyLocationTracking.TRACKING_FOLLOW);
+            trackingSettings.setMyBearingTrackingMode(MyBearingTracking.COMPASS);
         } else {
             // 让地图始终以定位点为中心，无法滑动
-//            trackingSettings.setDismissAllTrackingOnGesture(true);
+            trackingSettings.setDismissAllTrackingOnGesture(true);
             floatingActionButton.setImageResource(R.drawable.my_location);
         }
         //添加或移除定位图层
