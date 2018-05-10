@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.se.map.semapsdk.areacode.AreaCodeActivity;
+import com.se.map.semapsdk.areacode.LocationPoiActivity;
 import com.se.map.semapsdk.net.GenerateSignActivity;
 import com.se.map.semapsdk.net.PoiContentActivity;
 import com.se.map.semapsdk.permission.EasyPermission;
@@ -78,6 +79,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermission.Pe
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this,AreaCodeActivity.class));
+            }
+        });
+
+        findViewById(R.id.location_poi_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,LocationPoiActivity.class));
             }
         });
 

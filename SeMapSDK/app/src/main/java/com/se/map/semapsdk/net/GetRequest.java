@@ -2,6 +2,8 @@ package com.se.map.semapsdk.net;
 
 import com.se.map.semapsdk.PoiEntity;
 import com.se.map.semapsdk.model.CityCodeEntity;
+import com.se.map.semapsdk.model.LocationEntity;
+import com.se.map.semapsdk.model.LocationInfo;
 
 import java.util.HashMap;
 
@@ -26,4 +28,7 @@ public interface GetRequest {
 
     @GET("/api/location")
     Call<CityCodeEntity> getLocationCode(@QueryMap HashMap<String,String> map);
+
+    @GET("/api/poi/search")
+    Call<LocationEntity> getLocationInfo(@QueryMap HashMap<String,String> map);
 }

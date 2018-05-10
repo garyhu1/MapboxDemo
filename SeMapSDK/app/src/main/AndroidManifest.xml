@@ -35,6 +35,8 @@
         <activity android:name=".MyLocationActivity"/>
         <activity android:name=".net.GenerateSignActivity"/>
         <activity android:name=".areacode.AreaCodeActivity"/>
+
+        <activity android:name=".areacode.LocationPoiActivity"/>
     </application>
 
 </manifest>

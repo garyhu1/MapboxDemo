@@ -266,7 +266,7 @@ public class MarkerActivity extends AppCompatActivity {
     public void addMaker(MapboxMap mapboxMap){
         // 设置maker样式和位置
         IconFactory iconFactory = IconFactory.getInstance(this);
-        Icon icon = iconFactory.fromResource(R.mipmap.maker);
+        Icon icon = iconFactory.fromResource(R.mipmap.semap_mylocation_icon_bearing);
         Icon icon1 = iconFactory.fromResource(R.mipmap.ic_launcher_round);
         MarkerOptions markerOptions1 = new MarkerOptions()
                 .position(new LatLng(31.264502,120.739194))
